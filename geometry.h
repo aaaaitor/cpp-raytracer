@@ -23,7 +23,7 @@ private:
 
 typedef vec<2, float>	Vec2f;	//Vector 2 float definition
 typedef vec<3, float>	Vec3f;	//Vector 3 float definition
-typedef vec<3, int>		Vec3i;	//Vector 3 integer definition
+typedef vec<3, int>     Vec3i;	//Vector 3 integer definition
 typedef vec<4, float>	Vec4f;	//Vector 4 float definition
 
 template <typename T> struct vec<2, T> {
@@ -56,37 +56,37 @@ template <typename T> struct vec<4, T> {
 // DEFINITIONS MATH OPERATORS FOR VECTORS
 //----------------------------------------
 
-template<size_t DIM, typename T> T operator*(const vec<DIM, T>& lhs, const vec<DIM, T>& rhs) {						//Vector multiplication
+template<size_t DIM, typename T> T operator*(const vec<DIM, T>& lhs, const vec<DIM, T>& rhs) {                      //Vector multiplication
 	T ret = T();
 	for (size_t i = DIM; i--; ret += lhs[i] * rhs[i]);
 	return ret;
 }
 
-template<size_t DIM, typename T> vec<DIM, T> operator+(vec<DIM, T> lhs, const vec<DIM, T>& rhs) {					//Vector addition
+template<size_t DIM, typename T> vec<DIM, T> operator+(vec<DIM, T> lhs, const vec<DIM, T>& rhs) {                   //Vector addition
 	for (size_t i = DIM; i--; lhs[i] += rhs[i]);
 	return lhs;
 }
 
-template<size_t DIM, typename T> vec<DIM, T> operator-(vec<DIM, T> lhs, const vec<DIM, T>& rhs) {					//Vector substraction
+template<size_t DIM, typename T> vec<DIM, T> operator-(vec<DIM, T> lhs, const vec<DIM, T>& rhs) {                   //Vector substraction
 	for (size_t i = DIM; i--; lhs[i] -= rhs[i]);
 	return lhs;
 }
 
-template<size_t DIM, typename T, typename U> vec<DIM, T> operator*(const vec<DIM, T>& lhs, const U& rhs) {			//Vector multiplication by scalar value
+template<size_t DIM, typename T, typename U> vec<DIM, T> operator*(const vec<DIM, T>& lhs, const U& rhs) {          //Vector multiplication by scalar value
 	vec<DIM, T> ret;
 	for (size_t i = DIM; i--; ret[i] = lhs[i] * rhs);
 	return ret;
 }
 
-template<size_t DIM, typename T> vec<DIM, T> operator-(const vec<DIM, T>& lhs) {									//Vector unary negation
+template<size_t DIM, typename T> vec<DIM, T> operator-(const vec<DIM, T>& lhs) {                                    //Vector unary negation
 	return lhs * T(-1);
 }
 
-template <typename T> vec<3, T> cross(vec<3, T> v1, vec<3, T> v2) {													//Vector cross product
+template <typename T> vec<3, T> cross(vec<3, T> v1, vec<3, T> v2) {                                                 //Vector cross product
 	return vec<3, T>(v1.y * v2.z - v1.z * v2.y, v1.z * v2.x - v1.x * v2.z, v1.x * v2.y - v1.y * v2.x);
 }
 
-template <size_t DIM, typename T> std::ostream& operator<<(std::ostream& out, const vec<DIM, T>& v) {				//Vector left shift operator
+template <size_t DIM, typename T> std::ostream& operator<<(std::ostream& out, const vec<DIM, T>& v) {               //Vector left shift operator
 	for (unsigned int i = 0; i < DIM; i++) {
 		out << v[i] << " ";
 	}
