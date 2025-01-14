@@ -6,12 +6,20 @@
 #include <vector>
 #include "geometry.h"
 
+//Define sphere material
+struct Material {
+    Material(const Vec3f& color) : diffuse_color(color) {}
+    Material() : diffuse_color() {}
+    Vec3f diffuse_color;
+};
+
 //Define a sphere based on a point on the world (center) and a radius
 struct Sphere {
-    Vec3f   center;
-    float   radius;
+    Vec3f       center;
+    float       radius;
+    Material    material;
 
-    Sphere(const Vec3f& c, const float& r) : center(c), radius(r) {}
+    Sphere(const Vec3f& c, const float& r, const Material& m) : center(c), radius(r), material(m) {}
 
     //Calculate if a ray casted form the camera position intersects with the sphere
     bool ray_intersect(const Vec3f& origin, const Vec3f& direction, float& t0) const {
@@ -33,19 +41,34 @@ struct Sphere {
     }
 };
 
+//Calculate the intersections in the scene
+bool scene_intersect(const Vec3f& origin, const Vec3f& direction, const std::vector<Sphere>& spheres, Vec3f& hit, Vec3f& N, Material& material) {
+    float spheres_dist = std::numeric_limits<float>::max();
+    for (size_t i = 0; i < spheres.size(); i++) {
+        float dist_i;
+        if (spheres[i].ray_intersect(origin, direction, dist_i) && dist_i < spheres_dist) {
+            spheres_dist = dist_i;
+            hit = origin + direction * dist_i;
+            N = (hit - spheres[i].center).normalize();
+            material = spheres[i].material;
+        }
+    }
+    return spheres_dist < 1000;
+}
+
 //Cast a ray using a origin point and a direction and return a color for the pixel
 // depending if it intersects or not
-Vec3f cast_ray(const Vec3f& origin, Vec3f& direction, const Sphere& sphere) {
-    float sphere_distance = std::numeric_limits<float>::max();
-
-    if (!sphere.ray_intersect(origin, direction, sphere_distance)) {
+Vec3f cast_ray(const Vec3f& origin, const Vec3f& direction, const std::vector<Sphere>& spheres) {
+    Vec3f point, N;
+    Material material;
+    if (!scene_intersect(origin, direction, spheres, point, N, material)) {
         return Vec3f(.2, .7, .8);       //Not intersecting color
     }
 
-    return Vec3f(.4, .4, .3);           //Intersecting color
+    return material.diffuse_color;      //Intersecting color
 }
 
-void render(const Sphere& sphere) {
+void render(const std::vector<Sphere>& spheres) {
     const int width     = 1024;                         //Image width
     const int height    = 768;                          //Image height
     const int fov       = M_PI / 2.;                    //Viewpoint field of view
@@ -62,7 +85,7 @@ void render(const Sphere& sphere) {
             float y = -(2 * (j + .5) / (float)height - 1) * tan(fov / 2.);
             Vec3f direction = Vec3f(x, y, -1).normalize();
 
-            framebuffer[i + j * width] = cast_ray(Vec3f(0, 0, 0), direction, sphere);
+            framebuffer[i + j * width] = cast_ray(Vec3f(0, 0, 0), direction, spheres);
         }
     }
 
@@ -79,6 +102,16 @@ void render(const Sphere& sphere) {
 }
 
 int main() {
-    render();
+    Material      ivory(Vec3f(0.4, 0.4, 0.3));
+    Material red_rubber(Vec3f(0.3, 0.1, 0.1));
+    std::vector<Sphere> spheres;
+
+    spheres.push_back(Sphere(Vec3f(-3,      0,   -16), 2, ivory));
+    spheres.push_back(Sphere(Vec3f(-1.0, -1.5,   -12), 2, red_rubber));
+    spheres.push_back(Sphere(Vec3f(1.5,  -0.5,   -18), 3, red_rubber));
+    spheres.push_back(Sphere(Vec3f(7,       5,   -18), 4, ivory));
+
+    render(spheres);
+
     return 0;
 }
