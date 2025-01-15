@@ -104,6 +104,23 @@ bool scene_intersect(const Vec3f& origin, const Vec3f& direction, const std::vec
     return std::min(spheres_dist, checkerboard_dist) < 1000;
 }
 
+Vec3f get_environment_color(const Vec3f& ray_direction) {
+
+    float theta = acos(ray_direction.y);
+    float phi = atan2(ray_direction.z, ray_direction.x);
+
+    float u = (phi + M_PI) / (2 * M_PI);
+    float v = (theta) / M_PI;
+
+    int x = int(u * envmap_width);
+    int y = int(v * envmap_height);
+
+    x = std::min(std::max(x, 0), envmap_width - 1);
+    y = std::min(std::max(y, 0), envmap_height - 1);
+
+    return envmap[x + y * envmap_width];
+}
+
 //-------------
 // RAY CASTING
 //-------------
@@ -154,23 +171,6 @@ Vec3f cast_ray_specular(const Vec3f& orig, const Vec3f& dir, const std::vector<S
         specular_light_intensity += powf(std::max(0.f, -reflect(-light_direction, N) * dir), material.specular_exponent) * lights[i].intensity;
     }
     return Vec3f(0,0,0) * diffuse_light_intensity * material.albedo[0] + Vec3f(1., 1., 1.) * specular_light_intensity * material.albedo[1];
-}
-
-Vec3f get_environment_color(const Vec3f& ray_direction) {
-    
-    float theta = acos(ray_direction.y);
-    float phi = atan2(ray_direction.z, ray_direction.x);
-
-    float u = (phi + M_PI) / (2 * M_PI);
-    float v = (theta) / M_PI;
-
-    int x = int(u * envmap_width);
-    int y = int(v * envmap_height);
-
-    x = std::min(std::max(x, 0), envmap_width - 1);
-    y = std::min(std::max(y, 0), envmap_height - 1);
-
-    return envmap[x + y * envmap_width];
 }
 
 Vec3f cast_ray_final(const Vec3f& orig, const Vec3f& dir, const std::vector<Sphere>& spheres, const std::vector<Light>& lights, size_t depth = 0) {
