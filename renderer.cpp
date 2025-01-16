@@ -178,6 +178,23 @@ Vec3f cast_ray_specular(const Vec3f& orig, const Vec3f& dir, const std::vector<S
     return Vec3f(0,0,0) * diffuse_light_intensity * material.albedo[0] + Vec3f(1., 1., 1.) * specular_light_intensity * material.albedo[1];
 }
 
+Vec3f cast_ray_phong(const Vec3f& orig, const Vec3f& dir, const std::vector<Sphere>& spheres, const std::vector<Light>& lights) {
+    Vec3f point, N;
+    Material material;
+
+    if (!scene_intersect(orig, dir, spheres, point, N, material)) {
+        return background_color;
+    }
+
+    float diffuse_light_intensity = 0, specular_light_intensity = 0;
+    for (size_t i = 0; i < lights.size(); i++) {
+        Vec3f light_direction = (lights[i].position - point).normalize();
+        diffuse_light_intensity += lights[i].intensity * std::max(0.f, light_direction * N);
+        specular_light_intensity += powf(std::max(0.f, -reflect(-light_direction, N) * dir), material.specular_exponent) * lights[i].intensity;
+    }
+    return material.diffuse_color * diffuse_light_intensity * material.albedo[0] + Vec3f(1., 1., 1.) * specular_light_intensity * material.albedo[1];
+}
+
 Vec3f cast_ray_final(const Vec3f& orig, const Vec3f& dir, const std::vector<Sphere>& spheres, const std::vector<Light>& lights, size_t depth = 0) {
     Vec3f point, N;
     Material material;
@@ -348,6 +365,40 @@ void render_specular(const std::vector<Sphere>& spheres, const std::vector<Light
     free(data);
 }
 
+void render_phong(const std::vector<Sphere>& spheres, const std::vector<Light>& lights) {
+    std::vector<Vec3f> framebuffer(width * height);                             //Pixel buffer
+    unsigned char* data = (unsigned char*)malloc(width * height * channels);    //Image data allocation
+
+    //Image generation
+#pragma omp parallel for
+    for (size_t j = 0; j < height; j++) {
+        for (size_t i = 0; i < width; i++) {
+
+            //Calculate the camera direction
+            float x = (2 * (i + .5) / (float)width - 1) * tan(fov / 2.) * width / (float)height;
+            float y = -(2 * (j + .5) / (float)height - 1) * tan(fov / 2.);
+            Vec3f direction = Vec3f(x, y, -1).normalize();
+
+            framebuffer[i + j * width] = cast_ray_phong(Vec3f(0, 0, 0), direction, spheres, lights);
+        }
+    }
+
+    //Save image
+    for (size_t i = 0; i < height * width; ++i) {
+        Vec3f& c = framebuffer[i];
+        float max = std::max(c[0], std::max(c[1], c[2]));
+        if (max > 1) c = c * (1. / max);
+        for (size_t j = 0; j < 3; j++) {
+            assert(data != nullptr);
+            data[i * 3 + j] = (unsigned char)(255 * std::max(0.f, std::min(1.f, framebuffer[i][j])));
+        }
+    }
+
+    //Save image
+    stbi_write_jpg("./output/4_phong.jpg", width, height, channels, data, quality);
+    free(data);
+}
+
 void render_final(const std::vector<Sphere>& spheres, const std::vector<Light>& lights) {
     std::vector<Vec3f> framebuffer(width * height);     //Pixel buffer
 
@@ -378,7 +429,7 @@ void render_final(const std::vector<Sphere>& spheres, const std::vector<Light>& 
     }
 
     //Save image
-    stbi_write_jpg("./output/4_final.jpg", width, height, channels, pixmap.data(), quality);
+    stbi_write_jpg("./output/5_final.jpg", width, height, channels, pixmap.data(), quality);
 }
 
 int main() {
@@ -454,6 +505,11 @@ int main() {
     //Render specular
     render_specular(spheres, lights);
     std::cout << "[INFO/Rendering/Specular]  Finished specular image render." << std::endl << std::endl;
+
+    std::cout << "[INFO/Rendering/Phong]     Starting Phong image render." << std::endl;
+    //Render phong
+    render_phong(spheres, lights);
+    std::cout << "[INFO/Rendering/Phong]     Finished Phong image render." << std::endl << std::endl;
 
     std::cout << "[INFO/Rendering/Final]     Starting final image render." << std::endl;
     //Render final
