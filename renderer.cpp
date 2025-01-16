@@ -10,6 +10,7 @@
 #include "stb_image_write.h"
 #include "stb_image.h"
 
+//Variables for enviroment image calculations
 int envmap_width, envmap_height;
 std::vector<Vec3f> envmap;
 
@@ -104,11 +105,15 @@ bool scene_intersect(const Vec3f& origin, const Vec3f& direction, const std::vec
     return std::min(spheres_dist, checkerboard_dist) < 1000;
 }
 
+
+//Calculate the color of the pixel taking into account the enviroment image
 Vec3f get_environment_color(const Vec3f& ray_direction) {
 
+    //Convert ray direction to polar coordinates
     float theta = acos(ray_direction.y);
-    float phi = atan2(ray_direction.z, ray_direction.x);
+    float phi   = atan2(ray_direction.z, ray_direction.x);
 
+    //Map the position into a UV space
     float u = (phi + M_PI) / (2 * M_PI);
     float v = (theta) / M_PI;
 
@@ -380,7 +385,7 @@ int main() {
     std::vector<Sphere> spheres;
     std::vector<Light>  lights;
 
-    std::cout << "[INFO/Resources/Images] Loading enviroment image." << std::endl;
+    std::cout << "[INFO/Resources/Images]    Loading enviroment image." << std::endl;
 
     //Load and read enviroment .jpg
     int n = -1;
@@ -397,7 +402,7 @@ int main() {
     }
     stbi_image_free(pixmap);
 
-    std::cout << "[INFO/Resources/Images] Enviroment image loaded." << std::endl;
+    std::cout << "[INFO/Resources/Images]    Enviroment image loaded." << std::endl << std::endl;
 
     std::cout << "[INFO/Resources/Materials] Defining materials." << std::endl;
 
@@ -408,9 +413,9 @@ int main() {
     Material        mirror(1.0, Vec4f(0.0, 10.0, 0.8, 0.0),  Vec3f(1.0, 1.0, 1.0),  1425.);
     Material         glass(1.5, Vec4f(0.0,  0.5, 0.1, 0.8),  Vec3f(0.6, 0.7, 0.8),   125.);
 
-    std::cout << "[INFO/Resources/Materials] Materials defined." << std::endl;
+    std::cout << "[INFO/Resources/Materials] Materials defined." << std::endl << std::endl;
 
-    std::cout << "[INFO/Scene/Meshes] Creating meshes." << std::endl;
+    std::cout << "[INFO/Scene/Meshes]        Creating meshes." << std::endl;
 
     //Add spheres
     spheres.push_back(Sphere(Vec3f(  -3,    0, -16), 2,  emerald_green));
@@ -419,43 +424,43 @@ int main() {
     spheres.push_back(Sphere(Vec3f(   7,    5, -18), 4,         mirror));
     spheres.push_back(Sphere(Vec3f(  -7, -1.5, -12), 2,   marble_white));
 
-    std::cout << "[INFO/Scene/Meshes] Meshes created." << std::endl;
+    std::cout << "[INFO/Scene/Meshes]        Meshes created." << std::endl << std::endl;
 
-    std::cout << "[INFO/Scene/Lighting] Creating lights." << std::endl;
+    std::cout << "[INFO/Scene/Lighting]      Creating lights." << std::endl;
 
     //Add light sources
     lights.push_back(Light(Vec3f(-20, 20, 20), 1.5));
     lights.push_back(Light(Vec3f(30, 50, -25), 1.8));
     lights.push_back(Light( Vec3f(30, 20, 30), 1.7));
 
-    std::cout << "[INFO/Scene/Lighting] Lights created." << std::endl;
+    std::cout << "[INFO/Scene/Lighting]      Lights created." << std::endl << std::endl;
 
     ////Render base image
     //render_base();
     
-    std::cout << "[INFO/Rendering] Starting rendering queue." << std::endl;
+    std::cout << "[INFO/Rendering]           Starting rendering queue." << std::endl << std::endl;
 
-    std::cout << "[INFO/Rendering/Ambient] Starting ambient image render." << std::endl;
+    std::cout << "[INFO/Rendering/Ambient]   Starting ambient image render." << std::endl;
     //Render ambient image
     render_ambient(spheres);
-    std::cout << "[INFO/Rendering/Ambient] Finished ambient image render." << std::endl;
+    std::cout << "[INFO/Rendering/Ambient]   Finished ambient image render." << std::endl << std::endl;
 
-    std::cout << "[INFO/Rendering/Diffuse] Starting diffuse image render." << std::endl;
+    std::cout << "[INFO/Rendering/Diffuse]   Starting diffuse image render." << std::endl;
     //Render diffuse image
     render_diffuse(spheres, lights);
-    std::cout << "[INFO/Rendering/Diffuse] Finished diffuse image render." << std::endl;
+    std::cout << "[INFO/Rendering/Diffuse]   Finished diffuse image render." << std::endl << std::endl;
 
-    std::cout << "[INFO/Rendering/Specular] Starting specular image render." << std::endl;
+    std::cout << "[INFO/Rendering/Specular]  Starting specular image render." << std::endl;
     //Render specular
     render_specular(spheres, lights);
-    std::cout << "[INFO/Rendering/Specular] Finished specular image render." << std::endl;
+    std::cout << "[INFO/Rendering/Specular]  Finished specular image render." << std::endl << std::endl;
 
-    std::cout << "[INFO/Rendering/Specular] Starting final image render." << std::endl;
+    std::cout << "[INFO/Rendering/Final]     Starting final image render." << std::endl;
     //Render final
     render_final(spheres, lights);
-    std::cout << "[INFO/Rendering/Specular] Finished final image render." << std::endl;
+    std::cout << "[INFO/Rendering/Final]     Finished final image render." << std::endl << std::endl << std::endl;
 
-    std::cout << "[INFO/Rendering] Rendering queue finished." << std::endl;
+    std::cout << "[INFO/Rendering]           Rendering queue finished." << std::endl << std::endl;
 
     return 0;
 }
