@@ -88,12 +88,3 @@ The ray tracer implements several key computer graphics concepts:
 ## License
 
 This project is released under the MIT License. See the LICENSE file for details.
-
-## Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
-
-## Acknowledgments
-
-- STB library by Sean Barrett
-- Environment map texture sources (if applicable)
