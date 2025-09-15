@@ -1,9 +1,53 @@
-# Small c++ program to render an image using ray-tracing.
+# C++ Ray Tracer
 
-The program includes the main file `(renderer.cpp)`, a small header file to create and modify vectors `(geometry.h)` and to header files from the stb library to read and write JPEG images.
+A small but powerful ray tracing program implemented in C++ that demonstrates various lighting and reflection effects. This project implements a ray tracer from scratch, capable of rendering scenes with multiple lighting effects including ambient, diffuse, specular reflection, shadows, and environment mapping.
 
+## Features
 
-When running the `'renderer.cpp'` file the program should output 5 images in the `'./output/'` directory. The images should look as follows (if nothing is changed):
+- **Multiple Lighting Effects:**
+  - Ambient lighting
+  - Diffuse reflection
+  - Specular reflection
+  - Phong reflection model
+  - Shadow casting
+  - Reflections and refractions
+  - Environment mapping
+
+- **Image Processing:**
+  - JPEG input/output support using STB library
+  - High-quality rendering output
+  - Configurable scene parameters
+
+## Project Structure
+
+```
+cpp-raytracer/
+├── include/
+│   ├── geometry.h          # Vector mathematics and geometry operations
+│   ├── stb_image.h        # Image loading library
+│   └── stb_image_write.h  # Image writing library
+├── src/
+│   └── renderer.cpp       # Main rendering engine
+├── resources/
+│   └── envmap.jpg        # Environment map texture
+└── output/               # Generated output images
+```
+
+## Prerequisites
+
+- C++ compiler with C++11 support
+- Visual Studio 2022 or later
+- Windows SDK 10.0 or later
+
+## Building the Project
+
+1. Open the solution file `cpp-raytracer.sln` in Visual Studio
+2. Select your preferred configuration (Debug/Release) and platform (x64/x86)
+3. Build the solution (F7 or Ctrl+Shift+B)
+
+## Running the Program
+
+When running the program, it will generate five different images in the `output/` directory, each demonstrating different lighting and reflection effects:
 
 *1. Ambient image:*
 
@@ -21,6 +65,35 @@ When running the `'renderer.cpp'` file the program should output 5 images in the
 
 ![4_phong](https://github.com/user-attachments/assets/f4cab853-6b70-44b4-83d6-9fc27fb7750d)
 
-*5. Final image with enviroment - (Phong reflection + Shadows + Reflections + Refractions):*
+*5. Final image with environment - (Phong reflection + Shadows + Reflections + Refractions):*
 
 ![5_final](https://github.com/user-attachments/assets/a690fdce-3467-4674-bd20-e43c359b6372)
+
+## Technical Implementation
+
+The ray tracer implements several key computer graphics concepts:
+
+- Ray-sphere intersection calculations
+- Vector mathematics for light reflection
+- Phong illumination model
+- Environment mapping using spherical coordinates
+- Fresnel equations for realistic reflection/refraction
+
+## Dependencies
+
+- [STB](https://github.com/nothings/stb) - Image loading/writing library
+  - `stb_image.h` for image loading
+  - `stb_image_write.h` for image writing
+
+## License
+
+This project is released under the MIT License. See the LICENSE file for details.
+
+## Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+## Acknowledgments
+
+- STB library by Sean Barrett
+- Environment map texture sources (if applicable)

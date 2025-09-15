@@ -15,18 +15,18 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="renderer.cpp">
+    <ClCompile Include="src\renderer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="geometry.h">
+    <ClInclude Include="include\geometry.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="stb_image_write.h">
+    <ClInclude Include="include\stb_image_write.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="stb_image.h">
+    <ClInclude Include="include\stb_image.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

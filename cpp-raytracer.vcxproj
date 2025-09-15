@@ -127,12 +127,12 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="renderer.cpp" />
+    <ClCompile Include="src\renderer.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="geometry.h" />
-    <ClInclude Include="stb_image.h" />
-    <ClInclude Include="stb_image_write.h" />
+    <ClInclude Include="include\geometry.h" />
+    <ClInclude Include="include\stb_image.h" />
+    <ClInclude Include="include\stb_image_write.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="resources\envmap.jpg" />
